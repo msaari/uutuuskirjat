@@ -237,9 +237,9 @@ $translators = $db->getColumn('translator');
 		<div class="block">
 		    <form method="post">
 		        <label>Etunimi:</label>
-		        <input type="text" name="first_name" required value="<?php echo $values['first_name']?>">
+		        <input type="text" name="first_name" autofocus data-1p-ignore required value="<?php echo $values['first_name']?>">
 		        <label>Sukunimi:</label>
-		        <input type="text" name="last_name" required value="<?php echo $values['last_name']?>">
+		        <input type="text" name="last_name" data-1p-ignore required value="<?php echo $values['last_name']?>">
 		        <label>Kirjan nimi:</label>
 		        <input type="text" name="book_name" required value="<?php echo $values['book_name']?>">
 		        <label>URL:</label>

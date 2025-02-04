@@ -133,11 +133,15 @@ class Database {
         		$book['book_name'] = "[{$book['book_name']}]({$book['url']})";
         	}
         	$age_rec = '';
-        	if ($book['age_recommendation']) {
+        	if (is_string($book['age_recommendation']) && strlen($book['age_recommendation']) > 0 ) {
 	        	$age_rec = ";{$book['age_recommendation']}";
         	}
+            $date = $book['date_added'];
+            if (is_numeric($date)) {
+                $date = date('j.n.Y', $date);
+            }
             echo <<<EOCSV
-            {$book['first_name']};{$book['last_name']};{$book['book_name']};{$book['publisher']};{$book['translator']}{$age_rec};{$book['additional_info']};{$book['publication_month']};{$book['date_added']};{$book['description']}
+            {$book['first_name']};{$book['last_name']};{$book['book_name']};{$book['publisher']};{$book['translator']}{$age_rec};{$book['additional_info']};{$book['publication_month']};{$date};{$book['description']}
 
             EOCSV;
         }
