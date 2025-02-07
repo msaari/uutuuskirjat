@@ -2396,7 +2396,7 @@ class YKL {
 		$array_string = 'const yklData = {';
 		foreach ( $this->ykl as $key => $value ) {
 			$escaped_value = str_replace( "'", "\'", $value );
-			$array_string .= "'$key': '$escaped_value.',\n";
+			$array_string .= "'$key': '$escaped_value',\n";
 		}
 		$array_string .= '};';
 		return $array_string;

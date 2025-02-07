@@ -70,16 +70,21 @@ class UI {
 <head>
     <title>Kirjavinkkien uutuuskirjalista</title>
     <style>
+    	h2 {
+		    font-family: Helvetica Neue, Arial, sans-serif;
+		    font-size: 24px;
+    	}
+    	
     	table {
 		    max-width: 100%;
 		    border-collapse: collapse;
 		    font-family: Helvetica Neue, Arial, sans-serif;
-		    font-size: 16px;
+		    font-size: 12px;
 		    margin-top: 20px;
 		}
 
 		th, td {
-		    padding: 12px;
+		    padding: 6px;
 		    border: 1px solid #ddd;
 		    text-align: left;
 		}
@@ -153,8 +158,8 @@ class UI {
 		}
 
 		svg {
-			width: 32px;
-			height: 32px;
+			width: 24px;
+			height: 24px;
 		}
 
 		.container {
