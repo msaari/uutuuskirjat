@@ -24,8 +24,91 @@ class Database {
             season TEXT,
             date_added TEXT DEFAULT CURRENT_TIMESTAMP
         )");
+
+        $this->db->exec("CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_name TEXT NOT NULL,
+            password TEXT NOT  NULL,
+            email TEXT NOT NULL
+        )");
+
+        $this->db->exec("CREATE TABLE IF NOT EXISTS sessions (
+            sid TEXT PRIMARY KEY,
+            user_id INTEGER NOT NULL,
+            open_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
+        )");
     }
     
+    public function insertUser($user_name, $email, $password) {
+        $user = $this->getUser($user_name);
+        if ($user) {
+            return false;
+        }
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return false;
+        }
+        $password = password_hash($password, PASSWORD_DEFAULT);
+        $stmt = $this->db->prepare("INSERT INTO users (user_name, password, email) VALUES (:user_name, :password, :email)");
+        $stmt->bindValue(':user_name', $user_name, SQLITE3_TEXT);
+        $stmt->bindValue(':password', $password, SQLITE3_TEXT);
+        $stmt->bindValue(':email', $email, SQLITE3_TEXT);
+        return $stmt->execute();
+    }
+
+    public function getUser($user_name) {
+        $query = 'SELECT * FROM users WHERE user_name = :user_name';
+        $stmt = $this->db->prepare($query);
+        $stmt->bindValue(':user_name', $user_name, SQLITE3_TEXT);
+        $result = $stmt->execute();
+        $row = $result->fetchArray(SQLITE3_ASSOC);
+        return $row;
+    }
+
+    public function checkPassword($user_name, $password) {
+        $user = $this->getUser($user_name);
+        if (!$user) {
+            return false;
+        }
+        return password_verify($password, $user['password']);
+    }
+
+    public function getUsers() {
+        $query = "SELECT * FROM users";
+        $result = $this->db->query($query);
+        while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+            var_dump($row);
+        }
+        return true;
+    }
+
+    public function getSessionUser($sid) {
+        $stmt = $this->db->prepare("SELECT * FROM sessions WHERE sid = :sid");
+        $stmt->bindValue(':sid', $sid, SQLITE3_TEXT);
+        $result = $stmt->execute();
+        if (!$result) {
+            return false;
+        }
+        $session = $result->fetchArray(SQLITE3_ASSOC);
+        if (isset($session['user_id'])) {
+            // Control session length based on $session['open_time'] if necessary.
+            return $session['user_id'];
+        }
+        return false;
+    }
+
+    public function setSessionUser($sid, $user_id) {
+        $stmt = $this->db->prepare("INSERT INTO sessions (sid, user_id) VALUES (:sid, :user_id)");
+        $stmt->bindValue(':sid', $sid, SQLITE3_TEXT);
+        $stmt->bindValue(':user_id', $user_id, SQLITE3_INTEGER);
+        return $stmt->execute();
+    }
+
+    public function deleteSession($sid) {
+        $stmt = $this->db->prepare("DELETE FROM sessions WHERE sid = :sid");
+        $stmt->bindValue(':sid', $sid, SQLITE3_TEXT);
+        return $stmt->execute();
+    }
+
     public function insertBook($firstName, $lastName, $bookName, $url, $publisher, $translator, $additionalInfo, $publicationMonth, $ageRecommendation, $description, $season, $dateAdded = null) {
         $stmt = $this->db->prepare("INSERT INTO books (first_name, last_name, book_name, url, publisher, translator, additional_info, publication_month, age_recommendation, description, season, date_added) VALUES (:first_name, :last_name, :book_name, :url, :publisher, :translator, :additional_info, :publication_month, :age_recommendation, :description, :season, :date_added)");
         $stmt->bindValue(':first_name', $firstName, SQLITE3_TEXT);
